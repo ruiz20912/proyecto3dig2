@@ -1,9 +1,6 @@
-// Proyecto 3 E.D.
-// Sistema de parqueos
-// Deyler Ruiz 20912
-// Mariana
+// Proyecto de Sistema de Parqueos con Tiva C, Sensores Infrarrojos y ESP32
+//Deyler Ruiz 20912 Mariana Quiross
 
-// Librerías necesarias
 #include <stdint.h>
 #include <stdbool.h>
 #include "inc/tm4c123gh6pm.h"
@@ -17,7 +14,6 @@
 #include "driverlib/timer.h"
 #include "driverlib/uart.h"
 
-// Frecuencia del cristal del microcontrolador
 #define CRYSTAL_FREQ 16000000
 
 // Variables globales para los LEDs y el debounce de cada sensor
@@ -50,7 +46,6 @@ int Sensor_4_Activated = -1;
 uint8_t Debounce_Flag_4 = 0;
 uint32_t Debounce_Count_4 = 0;
 
-// Función principal
 int main(void)
 {
     // Configuración del sistema
@@ -86,166 +81,167 @@ int main(void)
     // Inicializar UART5
     UARTConfigSetExpClk(UART5_BASE, SysCtlClockGet(), 115200, UART_CONFIG_WLEN_8 | UART_CONFIG_STOP_ONE | UART_CONFIG_PAR_NONE);
 
-
-while (1)
-{
-    // Leer estado de los sensores
-    int Current_Sensor_1 = GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_4);
-    int Current_Sensor_2 = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_5);
-    int Current_Sensor_3 = GPIOPinRead(GPIO_PORTD_BASE, GPIO_PIN_0);
-    int Current_Sensor_4 = GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_1);
-
-    // SENSOR 1
-    if (Current_Sensor_1 != Sensor_1_Activated)
+    while (1)
     {
-        Debounce_Count_1 = 0;
-        Debounce_Flag_1 = 1;
-    }
-    else if (Debounce_Flag_1)
-    {
-        // Incrementar contador de debounce si el estado sigue siendo el mismo
-        Debounce_Count_1++;
+        // Leer estado de los sensores
+        int Current_Sensor_1 = GPIOPinRead(GPIO_PORTF_BASE, GPIO_PIN_4);
+        int Current_Sensor_2 = GPIOPinRead(GPIO_PORTB_BASE, GPIO_PIN_5);
+        int Current_Sensor_3 = GPIOPinRead(GPIO_PORTD_BASE, GPIO_PIN_0);
+        int Current_Sensor_4 = GPIOPinRead(GPIO_PORTE_BASE, GPIO_PIN_1);
 
-        // Si el contador de debounce alcanza un cierto límite, considerar estado estable
-        if (Debounce_Count_1 > 10) // Ajustar este valor según sea necesario
+        // SENSOR 1
+        if (Current_Sensor_1 != Sensor_1_Activated)
         {
-            Debounce_Flag_1 = 0;
+            Debounce_Count_1 = 0;
+            Debounce_Flag_1 = 1;
+        }
+        else if (Debounce_Flag_1)
+        {
+            // Incrementar contador de debounce si el estado sigue siendo el mismo
+            Debounce_Count_1++;
 
-            // Determinar estado del sensor y enviar por UART
-            if (Current_Sensor_1 == 0)
+            // Si el contador de debounce alcanza un cierto límite, considerar estado estable
+            if (Debounce_Count_1 > 10) // Ajustar este valor según sea necesario
             {
-                // Sensor infrarrojo detecta algo, enviar 'A' por UART
-                UARTCharPut(UART5_BASE, 'A');
-                Red_LED_1 = GPIO_PIN_1;
-                Green_LED_1 = 0;
-            }
-            else
-            {
-                // Sensor infrarrojo no detecta nada, enviar 'B' por UART
-                UARTCharPut(UART5_BASE, 'B');
-                Green_LED_1 = GPIO_PIN_3;
-                Red_LED_1 = 0;
+                Debounce_Flag_1 = 0;
+
+                // Determinar estado del sensor y enviar por UART
+                if (Current_Sensor_1 == 0)
+                {
+                    // Sensor infrarrojo detecta algo, enviar 'A' por UART
+                    UARTCharPut(UART5_BASE, 'A');
+                    Red_LED_1 = GPIO_PIN_1;
+                    Green_LED_1 = 0;
+                }
+                else
+                {
+                    // Sensor infrarrojo no detecta nada, enviar 'B' por UART
+                    UARTCharPut(UART5_BASE, 'B');
+                    Green_LED_1 = GPIO_PIN_3;
+                    Red_LED_1 = 0;
+                }
             }
         }
-    }
 
-    // Controlar LEDs según estado del sensor
-    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3 | GPIO_PIN_1, Green_LED_1 | Red_LED_1);
-    Sensor_1_Activated = Current_Sensor_1;
+        // Controlar LEDs según estado del sensor
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3 | GPIO_PIN_1, Green_LED_1 | Red_LED_1);
+        Sensor_1_Activated = Current_Sensor_1;
 
-    // SENSOR 2
-    if (Current_Sensor_2 != Sensor_2_Activated)
-    {
-        Debounce_Count_2 = 0;
-        Debounce_Flag_2 = 1;
-    }
-    else if (Debounce_Flag_2)
-    {
-        // Incrementar contador de debounce si el estado sigue siendo el mismo
-        Debounce_Count_2++;
-
-        // Si el contador de debounce alcanza un cierto límite, considerar estado estable
-        if (Debounce_Count_2 > 10) // Ajustar este valor según sea necesario
+        // SENSOR 2
+        if (Current_Sensor_2 != Sensor_2_Activated)
         {
-            Debounce_Flag_2 = 0;
+            Debounce_Count_2 = 0;
+            Debounce_Flag_2 = 1;
+        }
+        else if (Debounce_Flag_2)
+        {
+            // Incrementar contador de debounce si el estado sigue siendo el mismo
+            Debounce_Count_2++;
 
-            // Determinar estado del sensor y enviar por UART
-            if (Current_Sensor_2 == 0)
+            // Si el contador de debounce alcanza un cierto límite, considerar estado estable
+            if (Debounce_Count_2 > 10) // Ajustar este valor según sea necesario
             {
-                // Sensor infrarrojo detecta algo, enviar 'C' por UART
-                UARTCharPut(UART5_BASE, 'C');
-                Red_LED_2 = GPIO_PIN_1;
-                Green_LED_2 = 0;
-            }
-            else
-            {
-                // Sensor infrarrojo no detecta nada, enviar 'D' por UART
-                UARTCharPut(UART5_BASE, 'D');
-                Green_LED_2 = GPIO_PIN_0;
-                Red_LED_2 = 0;
+                Debounce_Flag_2 = 0;
+
+                // Determinar estado del sensor y enviar por UART
+                if (Current_Sensor_2 == 0)
+                {
+                    // Sensor infrarrojo detecta algo, enviar 'C' por UART
+                    UARTCharPut(UART5_BASE, 'C');
+                    Red_LED_2 = GPIO_PIN_1;
+                    Green_LED_2 = 0;
+                }
+                else
+                {
+                    // Sensor infrarrojo no detecta nada, enviar 'D' por UART
+                    UARTCharPut(UART5_BASE, 'D');
+                    Green_LED_2 = GPIO_PIN_0;
+                    Red_LED_2 = 0;
+                }
             }
         }
-    }
 
-    // Controlar LEDs según estado del sensor
-    GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1, Green_LED_2 | Red_LED_2);
-    Sensor_2_Activated = Current_Sensor_2;
+        // Controlar LEDs según estado del sensor
+        GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_0 | GPIO_PIN_1, Green_LED_2 | Red_LED_2);
+        Sensor_2_Activated = Current_Sensor_2;
 
-    // SENSOR 3
-    if (Current_Sensor_3 != Sensor_3_Activated)
-    {
-        Debounce_Count_3 = 0;
-        Debounce_Flag_3 = 1;
-    }
-    else if (Debounce_Flag_3)
-    {
-        // Incrementar contador de debounce si el estado sigue siendo el mismo
-        Debounce_Count_3++;
-
-        // Si el contador de debounce alcanza un cierto límite, considerar estado estable
-        if (Debounce_Count_3 > 10) // Ajustar este valor según sea necesario
+        // SENSOR 3
+        if (Current_Sensor_3 != Sensor_3_Activated)
         {
-            Debounce_Flag_3 = 0;
+            Debounce_Count_3 = 0;
+            Debounce_Flag_3 = 1;
+        }
+        else if (Debounce_Flag_3)
+        {
+            // Incrementar contador de debounce si el estado sigue siendo el mismo
+            Debounce_Count_3++;
 
-            // Determinar estado del sensor y enviar por UART
-            if (Current_Sensor_3 == 0)
+            // Si el contador de debounce alcanza un cierto límite, considerar estado estable
+            if (Debounce_Count_3 > 10) // Ajustar este valor según sea necesario
             {
-                // Sensor infrarrojo detecta algo, enviar 'E' por UART
-                UARTCharPut(UART5_BASE, 'E');
-                Red_LED_3 = GPIO_PIN_2;
-                Green_LED_3 = 0;
-            }
-            else
-            {
-                // Sensor infrarrojo no detecta nada, enviar 'F' por UART
-                UARTCharPut(UART5_BASE, 'F');
-                Green_LED_3 = GPIO_PIN_1;
-                Red_LED_3 = 0;
+                Debounce_Flag_3 = 0;
+
+                // Determinar estado del sensor y enviar por UART
+                if (Current_Sensor_3 == 0)
+                {
+                    // Sensor infrarrojo detecta algo, enviar 'E' por UART
+                    UARTCharPut(UART5_BASE, 'E');
+                    Red_LED_3 = GPIO_PIN_2;
+                    Green_LED_3 = 0;
+                }
+                else
+                {
+                    // Sensor infrarrojo no detecta nada, enviar 'F' por UART
+                    UARTCharPut(UART5_BASE, 'F');
+                    Green_LED_3 = GPIO_PIN_1;
+                    Red_LED_3 = 0;
+                }
             }
         }
-    }
 
-    // Controlar LEDs según estado del sensor
-    GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1 | GPIO_PIN_2, Green_LED_3 | Red_LED_3);
-    Sensor_3_Activated = Current_Sensor_3;
+        // Controlar LEDs según estado del sensor
+        GPIOPinWrite(GPIO_PORTD_BASE, GPIO_PIN_1 | GPIO_PIN_2, Green_LED_3 | Red_LED_3);
+        Sensor_3_Activated = Current_Sensor_3;
 
-    // SENSOR 4
-    if (Current_Sensor_4 != Sensor_4_Activated)
-    {
-        Debounce_Count_4 = 0;
-        Debounce_Flag_4 = 1;
-    }
-    else if (Debounce_Flag_4)
-    {
-        // Incrementar contador de debounce si el estado sigue siendo el mismo
-        Debounce_Count_4++;
-
-        // Si el contador de debounce alcanza un cierto límite, considerar estado estable
-        if (Debounce_Count_4 > 10) // Ajustar este valor según sea necesario
+        // SENSOR 4
+        if (Current_Sensor_4 != Sensor_4_Activated)
         {
-            Debounce_Flag_4 = 0;
+            Debounce_Count_4 = 0;
+            Debounce_Flag_4 = 1;
+        }
+        else if (Debounce_Flag_4)
+        {
+            // Incrementar contador de debounce si el estado sigue siendo el mismo
+            Debounce_Count_4++;
 
-            // Determinar estado del sensor y enviar por UART
-            if (Current_Sensor_4 == 0)
+            // Si el contador de debounce alcanza un cierto límite, considerar estado estable
+            if (Debounce_Count_4 > 10) // Ajustar este valor según sea necesario
             {
-                // Sensor infrarrojo detecta algo, enviar 'G' por UART
-                UARTCharPut(UART5_BASE, 'G');
-                Red_LED_4 = GPIO_PIN_3;
-                Green_LED_4 = 0;
-            }
-            else
-            {
-                // Sensor infrarrojo no detecta nada, enviar 'H' por UART
-                UARTCharPut(UART5_BASE, 'H');
-                Green_LED_4 = GPIO_PIN_2;
-                Red_LED_4 = 0;
+                Debounce_Flag_4 = 0;
+
+                // Determinar estado del sensor y enviar por UART
+                if (Current_Sensor_4 == 0)
+                {
+                    // Sensor infrarrojo detecta algo, enviar 'G' por UART
+                    UARTCharPut(UART5_BASE, 'G');
+                    Red_LED_4 = GPIO_PIN_3;
+                    Green_LED_4 = 0;
+                }
+                else
+                {
+                    // Sensor infrarrojo no detecta nada, enviar 'H' por UART
+                    UARTCharPut(UART5_BASE, 'H');
+                    Green_LED_4 = GPIO_PIN_2;
+                    Red_LED_4 = 0;
+                }
             }
         }
+
+        // Controlar LEDs según estado del sensor
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2 | GPIO_PIN_3, Green_LED_4 | Red_LED_4);
+        Sensor_4_Activated = Current_Sensor_4;
+
+        SysCtlDelay(100000); // Retardo para evitar lecturas constantes de los sensores
     }
-
-    // Controlar LEDs según estado del sensor
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2 | GPIO_PIN_3, Green_LED_4 | Red_LED_4);
-    Sensor_4_Activated = Current_Sensor_4;
-
-    SysCtlDelay(100000); // Retardo para evitar lecturas constantes de los sensores
 }
+
